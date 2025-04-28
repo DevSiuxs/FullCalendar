@@ -4,4 +4,4 @@
 
 ![Logo](https://fullcalendar.io/assets/img/logo-fullcalendar.png)  
 
-[Ir a la documentación oficial](https://fullcalendar.io/docs)  
+[FullCalendar](https://fullcalendar.io/docs)  
