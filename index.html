@@ -1,79 +1,185 @@
 <!DOCTYPE html>
 <html lang='es'>
 <head>
-    <meta charset='utf-8' />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendario de Eventos</title>
+  <meta charset='utf-8' />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendario de Eventos</title>
 
-    <!-- FullCalendar 6.1.15 -->
-    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/index.global.min.js'></script>
-    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.15/index.global.min.js'></script>
-    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.15/index.global.min.js'></script>
-    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.15/index.global.min.js'></script>
+  <!-- FullCalendar 6.1.15 -->
+  <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/index.global.min.js'></script>
+  <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.15/index.global.min.js'></script>
+  <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.15/index.global.min.js'></script>
+  <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.15/index.global.min.js'></script>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            text-align: center;
-        }
-        #calendar {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-    </style>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      text-align: center;
+    }
+    #calendar {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+  </style>
 </head>
 <body>
 
-    <h2>Calendario de Eventos</h2>
-    <div id='calendar'></div>
+  <h2>Calendario de Eventos</h2>
+  <div id='calendar'></div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
+  <script>
+    // compilacion de js
+    document.addEventListener('DOMContentLoaded', function() {
 
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                headerToolbar: {  // Corrección de nombre
-                    left: 'today prev,next',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
-                initialView: 'dayGridMonth',
-                locale: 'es', // Traducción al español
-                selectable: true, // Permitir selección de fechas
-                editable: true, // Permitir arrastrar eventos
-                events: [ // Eventos de ejemplo
-                    { title: 'Evento 1', start: '2024-02-05' },
-                    { title: 'Reunión', start: '2024-02-10' }
-                ],
-                dateClick: function(info) { 
-    let title = prompt("Ingrese el nombre del evento:");
-    
-    if (title) {
-        calendar.addEvent({ 
-            title: title, 
-            start: info.dateStr 
-        });
+      var calendarEl = document.getElementById('calendar');
 
-        alert("Evento agregado: " + title);
-    }
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        headerToolbar: {
+    left: 'prev,next', //desplazamiento a otro mes 
+    center: 'title', 
+    right: 'dayGridMonth,timeGridWeek,timeGridDay' //Dia , Mes , Año
+  },
+    buttonText: { //convertimos las funciones de ingles a españo,
+      month:    'Mes',
+      week:     'Semana',
+      day:      'Día'
+  },
+        initialView: 'dayGridMonth',
+        locale: 'es',
+        selectable: true,
+        editable: true,
+        events: [],
 
-    // Mostrar la fecha en formato DD/MM/YYYY
-    let fecha = new Date(info.date);
-    let fechaFormateada = fecha.getDate().toString().padStart(2, '0') + '/' + 
-                          (fecha.getMonth() + 1).toString().padStart(2, '0') + '/' + 
-                          fecha.getFullYear();
-    
-    alert("Valor seleccionado: " + fechaFormateada);
+        // Cuando se da clic en una fecha vacía
+        dateClick: function(info) {
+          Swal.fire({
+            title: 'Crear un nuevo evento',
+  
+            html: `
+  <div style="display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 10px;">
+  <label for="swal-title">Título del evento</label>
+  <input id="swal-title" class="swal2-input" placeholder="Evento">
+  </div>
 
-    // Cambiar color del día seleccionado
-    info.dayEl.style.backgroundColor = '#fff';
+  <div style="display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 10px;">
+  <label for="swal-type">Tipo de evento</label>
+  <select id="swal-type" class="swal2-input" style="width: 200px;">
+    <option value="">Seleccionar tipo</option>
+    <option value="junta">Junta</option>
+    <option value="vacaciones">Vacaciones</option>
+    <option value="otro">Otro</option>
+  </select>
+</div>
+
+
+<div style="display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 10px;">
+  <label for="swal-start">Fecha de inicio</label>
+  <input id="swal-start" type="date" class="swal2-input" value="${info.dateStr}">
+</div>
+
+<div style="display: flex; flex-direction: column; align-items: flex-start;">
+  <label for="swal-end">Fecha de fin</label>
+  <input id="swal-end" type="date" class="swal2-input" value="${info.dateStr}">
+</div>
+            `,
+            focusConfirm: false,
+            showCancelButton: true,
+            confirmButtonText: 'Guardar',
+            
+            preConfirm: () => {
+              const title = document.getElementById('swal-title').value;
+              const type = document.getElementById('swal-type').value;
+              const startDate = document.getElementById('swal-start').value;
+              const endDate = document.getElementById('swal-end').value;
+
+              // Validaciones
+if (!title) {
+  Swal.showValidationMessage('El título es obligatorio');
+  return false;
 }
-            });
+if (!type) { // ✅ Nueva validación
+  Swal.showValidationMessage('Debe seleccionar un tipo de evento');
+  return false;
+}
+if (!startDate || !endDate) {
+  Swal.showValidationMessage('Debe seleccionar ambas fechas');
+  return false;
+}
+if (startDate > endDate) {
+  Swal.showValidationMessage('La fecha de inicio no puede ser posterior a la fecha de fin');
+  return false;
+}
 
-            calendar.render();
-        });
-    </script>
+
+              return { title, type, startDate, endDate };
+            }
+          }).then((result) => {
+            if (result.isConfirmed) {
+              const { title, type, startDate, endDate } = result.value;
+              let backgroundColor;
+
+              // Elegir color dependiendo del tipo
+              switch(type) {
+                case 'junta':
+                  backgroundColor = '#007bff'; // Azul
+                  break;
+                case 'vacaciones':
+                  backgroundColor = '#28a745'; // Verde
+                  break;
+                default:
+                  backgroundColor = '#ffcc00'; // Amarillo
+              }
+
+              // Agregar evento al calendario
+              calendar.addEvent({
+                title: title,
+                start: startDate,
+                end: endDate,
+                backgroundColor: backgroundColor
+              });
+
+              Swal.fire('¡Evento creado!', '', 'success');
+            }
+          });
+        },
+
+        // Cuando se arrastra (mueve) un evento
+        eventDrop: function(info) {
+          Swal.fire('Evento reagendado a: ' + info.event.start.toLocaleString());
+        },
+
+        // Cuando se cambia el tamaño de un evento (modificando su duración)
+        eventResize: function(info) {
+          Swal.fire('Evento Modificado.');
+        },
+
+        // Cuando se da clic en un evento existente
+        eventClick: function(info) {
+          Swal.fire({
+            title: '¿Eliminar evento?',
+            text: `¿Seguro que quieres eliminar "${info.event.title}"?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Elimiar Evento',
+            cancelButtonText: 'Cancelar'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              info.event.remove(); // 🔥 Eliminamos el evento
+              Swal.fire('Eliminado', 'El evento ha sido eliminado.', 'success');
+            }
+          });
+        }
+
+      });
+
+      // Renderizar el calendario en pantalla
+      calendar.render();
+    });
+  </script>
 
 </body>
 </html>
