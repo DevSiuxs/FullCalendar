@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang='es'>
+<head>
+    <meta charset='utf-8' />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario de Eventos</title>
+
+    <!-- FullCalendar 6.1.15 -->
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.15/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.15/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.15/index.global.min.js'></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        #calendar {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Calendario de Eventos</h2>
+    <div id='calendar'></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                headerToolbar: {  // Corrección de nombre
+                    left: 'today prev,next',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                initialView: 'dayGridMonth',
+                locale: 'es', // Traducción al español
+                selectable: true, // Permitir selección de fechas
+                editable: true, // Permitir arrastrar eventos
+                events: [ // Eventos de ejemplo
+                    { title: 'Evento 1', start: '2024-02-05' },
+                    { title: 'Reunión', start: '2024-02-10' }
+                ],
+                dateClick: function(info) { 
+    let title = prompt("Ingrese el nombre del evento:");
+    
+    if (title) {
+        calendar.addEvent({ 
+            title: title, 
+            start: info.dateStr 
+        });
+
+        alert("Evento agregado: " + title);
+    }
+
+    // Mostrar la fecha en formato DD/MM/YYYY
+    let fecha = new Date(info.date);
+    let fechaFormateada = fecha.getDate().toString().padStart(2, '0') + '/' + 
+                          (fecha.getMonth() + 1).toString().padStart(2, '0') + '/' + 
+                          fecha.getFullYear();
+    
+    alert("Valor seleccionado: " + fechaFormateada);
+
+    // Cambiar color del día seleccionado
+    info.dayEl.style.backgroundColor = '#fff';
+}
+            });
+
+            calendar.render();
+        });
+    </script>
+
+</body>
+</html>
