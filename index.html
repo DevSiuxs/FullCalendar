@@ -1,73 +1,73 @@
 <!DOCTYPE html>
-<html lang='es'>
-<head>
-  <meta charset='utf-8' />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calendario de Eventos</title>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calendario de Eventos</title>
 
-  <!-- FullCalendar 6.1.15 -->
-  <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/index.global.min.js'></script>
-  <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.15/index.global.min.js'></script>
-  <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.15/index.global.min.js'></script>
-  <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.15/index.global.min.js'></script>
+    <!-- FullCalendar 6.1.15 -->
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.15/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.15/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.15/index.global.min.js"></script>
 
-  <!-- SweetAlert2 -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      text-align: center;
-    }
-    #calendar {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-  </style>
-</head>
-<body>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        text-align: center;
+      }
+      #calendar {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Preisa</h2>
+    <div id="calendar"></div>
 
-  <h2>Calendario de Eventos</h2>
-  <div id='calendar'></div>
+    <script>
+      // compilacion de js
+      document.addEventListener("DOMContentLoaded", function () {
+        var calendarEl = document.getElementById("calendar");
 
-  <script>
-    // compilacion de js
-    document.addEventListener('DOMContentLoaded', function() {
+        // nav
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          headerToolbar: {
+            left: "prev,next",
+            center: "title",
+            right: "dayGridMonth",
+          },
+          buttonText: {
+            month: "Mes",
+          },
+          initialView: "dayGridMonth",
+          locale: "es",
+          selectable: true,
+          editable: true,
+          events: [],
+          // nav
 
-      var calendarEl = document.getElementById('calendar');
+          dateClick: function (info) {
+            const viewType = calendar.view.type;
 
-      var calendar = new FullCalendar.Calendar(calendarEl, {
-        headerToolbar: {
-    left: 'prev,next', //desplazamiento a otro mes 
-    center: 'title', 
-    right: 'dayGridMonth,timeGridWeek,timeGridDay' //Dia , Mes , Año
-  },
-    buttonText: { //convertimos las funciones de ingles a españo,
-      month:    'Mes',
-      week:     'Semana',
-      day:      'Día'
-  },
-        initialView: 'dayGridMonth',
-        locale: 'es',
-        selectable: true,
-        editable: true,
-        events: [],
+            if (viewType === "dayGridMonth") {
+              Swal.fire({
+                title: "Crear un nuevo evento",
+                html: `
+        
+   <div style="margin-bottom: 15px;">
+  <label for="swal-title" style="display: block; margin-bottom: 5px; font-weight: bold;">Nombre</label>
+  <input id="swal-title" class="swal2-input" placeholder="Evento" style="width: 80%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+</div>
 
-        // Cuando se da clic en una fecha vacía
-        dateClick: function(info) {
-          Swal.fire({
-            title: 'Crear un nuevo evento',
-  
-            html: `
-  <div style="display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 10px;">
-  <label for="swal-title">Título del evento</label>
-  <input id="swal-title" class="swal2-input" placeholder="Evento">
-  </div>
-
-  <div style="display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 10px;">
-  <label for="swal-type">Tipo de evento</label>
-  <select id="swal-type" class="swal2-input" style="width: 200px;">
+<div style="margin-bottom: 15px;">
+  <label for="swal-type" style="display: block; margin-bottom: 5px; font-weight: bold;">Tipo de evento</label>
+  <select id="swal-type" class="swal2-input" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
     <option value="">Seleccionar tipo</option>
     <option value="junta">Junta</option>
     <option value="vacaciones">Vacaciones</option>
@@ -75,111 +75,128 @@
   </select>
 </div>
 
-
-<div style="display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 10px;">
-  <label for="swal-start">Fecha de inicio</label>
-  <input id="swal-start" type="date" class="swal2-input" value="${info.dateStr}">
+<div style="margin-bottom: 15px;">
+  <label for="swal-start" style="display: block; margin-bottom: 5px; font-weight: bold;">Fecha de inicio</label>
+  <input id="swal-start" type="date" class="swal2-input" style="width: 80%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
 </div>
 
-<div style="display: flex; flex-direction: column; align-items: flex-start;">
-  <label for="swal-end">Fecha de fin</label>
-  <input id="swal-end" type="date" class="swal2-input" value="${info.dateStr}">
+<div style="margin-bottom: 25px;">
+  <label for="swal-end" style="display: block; margin-bottom: 5px; font-weight: bold;">Fecha de fin</label>
+  <input id="swal-end" type="date" class="swal2-input" style="width: 80%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
 </div>
-            `,
-            focusConfirm: false,
-            showCancelButton: true,
-            confirmButtonText: 'Guardar',
-            
-            preConfirm: () => {
-              const title = document.getElementById('swal-title').value;
-              const type = document.getElementById('swal-type').value;
-              const startDate = document.getElementById('swal-start').value;
-              const endDate = document.getElementById('swal-end').value;
 
-              // Validaciones
-if (!title) {
-  Swal.showValidationMessage('El título es obligatorio');
-  return false;
-}
-if (!type) { // ✅ Nueva validación
-  Swal.showValidationMessage('Debe seleccionar un tipo de evento');
-  return false;
-}
-if (!startDate || !endDate) {
-  Swal.showValidationMessage('Debe seleccionar ambas fechas');
-  return false;
-}
-if (startDate > endDate) {
-  Swal.showValidationMessage('La fecha de inicio no puede ser posterior a la fecha de fin');
-  return false;
-}
+      `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: "Guardar",
 
+                preConfirm: () => {
+                  const title = document.getElementById("swal-title").value;
+                  const type = document.getElementById("swal-type").value;
+                  const start = document.getElementById("swal-start").value;
+                  const end = document.getElementById("swal-end").value;
 
-              return { title, type, startDate, endDate };
-            }
-          }).then((result) => {
-            if (result.isConfirmed) {
-              const { title, type, startDate, endDate } = result.value;
-              let backgroundColor;
+                  if (!title) {
+                    Swal.showValidationMessage("El título es obligatorio");
+                    return false;
+                  }
+                  if (!type) {
+                    Swal.showValidationMessage(
+                      "Debe seleccionar un tipo de evento"
+                    );
+                    return false;
+                  }
+                  if (!start || !end) {
+                    Swal.showValidationMessage(
+                      "Debe seleccionar las fechas de inicio y fin"
+                    );
+                    return false;
+                  }
+                  if (start > end) {
+                    Swal.showValidationMessage(
+                      "La fecha de inicio no puede ser después de la fecha de fin"
+                    );
+                    return false;
+                  }
 
-              // Elegir color dependiendo del tipo
-              switch(type) {
-                case 'junta':
-                  backgroundColor = '#007bff'; // Azul
-                  break;
-                case 'vacaciones':
-                  backgroundColor = '#28a745'; // Verde
-                  break;
-                default:
-                  backgroundColor = '#ffcc00'; // Amarillo
-              }
+                  return {
+                    title,
+                    type,
+                    start,
+                    end,
+                  };
+                },
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  const { title, type, start, end } = result.value;
+                  let backgroundColor;
 
-              // Agregar evento al calendario
-              calendar.addEvent({
-                title: title,
-                start: startDate,
-                end: endDate,
-                backgroundColor: backgroundColor
+                  switch (type) {
+                    case "junta":
+                      backgroundColor = "#007bff";
+                      break;
+                    case "vacaciones":
+                      backgroundColor = "#28a745";
+                      break;
+                    default:
+                      backgroundColor = "#ffcc00";
+                  }
+
+                  // Sumar 1 día al end
+                  let realEnd = new Date(end);
+                  realEnd.setDate(realEnd.getDate() + 1);
+
+                  calendar.addEvent({
+                    title: title,
+                    start: start,
+                    end: realEnd.toISOString().split("T")[0], // Formato correcto
+                    backgroundColor: backgroundColor,
+                    allDay: true,
+                  });
+
+                  Swal.fire("¡Evento creado!", "", "success");
+                }
               });
-
-              Swal.fire('¡Evento creado!', '', 'success');
             }
-          });
-        },
+          },
 
-        // Cuando se arrastra (mueve) un evento
-        eventDrop: function(info) {
-          Swal.fire('Evento reagendado a: ' + info.event.start.toLocaleString());
-        },
+          // Cuando se arrastra (mueve) un evento
+          eventDrop: function (info) {
+            Swal.fire(
+              "Evento reagendado a: " + info.event.start.toLocaleString()
+            );
+          },
 
-        // Cuando se cambia el tamaño de un evento (modificando su duración)
-        eventResize: function(info) {
-          Swal.fire('Evento Modificado.');
-        },
+          // Cuando se cambia el tamaño de un evento (modificando su duración)
+          eventResize: function (info) {
+            Swal.fire("Evento Modificado.");
+          },
 
-        // Cuando se da clic en un evento existente
-        eventClick: function(info) {
-          Swal.fire({
-            title: '¿Eliminar evento?',
-            text: `¿Seguro que quieres eliminar "${info.event.title}"?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Elimiar Evento',
-            cancelButtonText: 'Cancelar'
-          }).then((result) => {
-            if (result.isConfirmed) {
-              info.event.remove(); // 🔥 Eliminamos el evento
-              Swal.fire('Eliminado', 'El evento ha sido eliminado.', 'success');
-            }
-          });
-        }
+          // Cuando se da clic en un evento existente
+          eventClick: function (info) {
+            Swal.fire({
+              title: "¿Eliminar evento?",
+              text: `¿Seguro que quieres eliminar "${info.event.title}"?`,
+              icon: "warning",
+              showCancelButton: true,
+              confirmButtonText: "Elimiar Evento",
+              cancelButtonText: "Cancelar",
+            }).then((result) => {
+              if (result.isConfirmed) {
+                info.event.remove(); // 🔥 Eliminamos el evento
+                Swal.fire(
+                  "Eliminado",
+                  "El evento ha sido eliminado.",
+                  "success"
+                );
+              }
+            });
+          },
+        });
 
+        // Renderizar el calendario en pantalla
+        calendar.render();
       });
-
-      // Renderizar el calendario en pantalla
-      calendar.render();
-    });
-  </script>
-
-</body>
+    </script>
+  </body>
 </html>
